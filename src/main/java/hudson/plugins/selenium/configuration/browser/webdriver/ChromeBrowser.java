@@ -1,5 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.util.FormValidation;
 
@@ -37,9 +38,9 @@ public class ChromeBrowser extends WebDriverBrowser {
 	}
 	
 	@Override
-	public Map<String, String> getJVMArgs() {
+	public Map<String, String> getJVMArgs( EnvVars env ) {
 		 Map<String, String> args = new HashMap<String, String>();
-		combine(args, PARAM_BINARY_PATH, server_binary);
+		combine(args, PARAM_BINARY_PATH, env.expand(server_binary));
 		return args;
 	}
 

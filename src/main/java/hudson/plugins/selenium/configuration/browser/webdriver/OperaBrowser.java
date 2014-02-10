@@ -1,5 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
+import hudson.EnvVars;
 import hudson.Extension;
 
 import java.util.HashMap;
@@ -26,9 +27,9 @@ public class OperaBrowser extends WebDriverBrowser {
 	}
 	
 	@Override
-	public Map<String, String> getJVMArgs() {
+	public Map<String, String> getJVMArgs( EnvVars env ) {
 		Map<String, String> args = new HashMap<String, String>();
-		combine(args, PARAM_BINARY_PATH, browser_binary);
+		combine(args, PARAM_BINARY_PATH, env.expand(browser_binary));
 		return args;
 	}
 

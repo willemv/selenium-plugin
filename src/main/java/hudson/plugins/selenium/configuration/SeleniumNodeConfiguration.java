@@ -9,6 +9,7 @@ import hudson.plugins.selenium.SeleniumRunOptions;
 
 import java.io.Serializable;
 
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean

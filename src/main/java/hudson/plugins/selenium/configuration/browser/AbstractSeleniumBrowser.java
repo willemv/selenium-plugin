@@ -1,16 +1,20 @@
 package hudson.plugins.selenium.configuration.browser;
 
+import hudson.EnvVars;
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Computer;
 import hudson.plugins.selenium.SeleniumRunOptions;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import hudson.slaves.EnvironmentVariablesNodeProperty;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -37,7 +41,7 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 	private SeleniumProtocol protocol;
 	private String name;
 
-	protected AbstractSeleniumBrowser(SeleniumProtocol protocol, int instances, String version, String name) {
+  protected AbstractSeleniumBrowser(SeleniumProtocol protocol, int instances, String version, String name) {
 		if (protocol == null) {
 			throw new NullPointerException();
 		}
@@ -93,7 +97,21 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 	}
 
 	public void initOptions(Computer c, SeleniumRunOptions opt) {
-		opt.getJVMArguments().putAll(getJVMArgs());
+		EnvVars env;
+		try {
+			env = c.getEnvironment();
+		} catch (Exception e) {
+			//in case of exceptions, simply don't expand any variables
+			env = new EnvVars();
+		}
+		EnvironmentVariablesNodeProperty varProperty = c.getNode().getNodeProperties().get(EnvironmentVariablesNodeProperty.class);
+		if (varProperty != null) {
+			EnvVars nodeVariables = varProperty.getEnvVars();
+			env.overrideAll(nodeVariables);
+		}
+
+
+		opt.getJVMArguments().putAll(getJVMArgs(env));
 		opt.addOption("-browser");
 		opt.addOption(StringUtils.join(initBrowserOptions(c, opt), ","));
 	}
@@ -107,7 +125,7 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 		return args;
 	}
 
-	protected Map<String, String> getJVMArgs() {
+	protected Map<String, String> getJVMArgs(EnvVars env) {
 		return Collections.emptyMap();
 	}
 	
