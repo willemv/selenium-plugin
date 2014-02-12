@@ -97,6 +97,15 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 	}
 
 	public void initOptions(Computer c, SeleniumRunOptions opt) {
+		EnvVars env = getNodeVars(c);
+
+
+		opt.getJVMArguments().putAll(getJVMArgs(env));
+		opt.addOption("-browser");
+		opt.addOption(StringUtils.join(initBrowserOptions(c, opt), ","));
+	}
+
+	protected final EnvVars getNodeVars(Computer c) {
 		EnvVars env;
 		try {
 			env = c.getEnvironment();
@@ -109,19 +118,16 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 			EnvVars nodeVariables = varProperty.getEnvVars();
 			env.overrideAll(nodeVariables);
 		}
-
-
-		opt.getJVMArguments().putAll(getJVMArgs(env));
-		opt.addOption("-browser");
-		opt.addOption(StringUtils.join(initBrowserOptions(c, opt), ","));
+		return env;
 	}
-	
+
 	protected List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
+		EnvVars nodeVars = getNodeVars(c);
 		List<String> args = new ArrayList<String>();
         combine(args, PARAM_SELENIUM_PROTOCOL, protocol);
         combine(args, PARAM_BROWSER_NAME, getName());
         combine(args, PARAM_MAX_INSTANCES, maxInstances);
-		combine(args, PARAM_VERSION, version);
+		combine(args, PARAM_VERSION, nodeVars.expand(version));
 		return args;
 	}
 

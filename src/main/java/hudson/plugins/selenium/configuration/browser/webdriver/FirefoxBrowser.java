@@ -35,7 +35,7 @@ public class FirefoxBrowser extends WebDriverBrowser {
 	@Override
 	public List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
 		List<String> args = super.initBrowserOptions(c, options);
-		combine(args, PARAM_BINARY_PATH, binary_path);
+		combine(args, PARAM_BINARY_PATH, getNodeVars(c).expand(binary_path));
 		return args;
 	}
 		
