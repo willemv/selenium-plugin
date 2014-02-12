@@ -17,12 +17,8 @@
  */
 package hudson.plugins.selenium;
 
-import hudson.DescriptorExtensionList;
-import hudson.Extension;
-import hudson.FilePath;
+import hudson.*;
 import hudson.Launcher.LocalLauncher;
-import hudson.Plugin;
-import hudson.Proc;
 import hudson.console.HyperlinkNote;
 import hudson.model.Action;
 import hudson.model.Describable;
@@ -346,9 +342,11 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 
 		listener.getLogger().println("Starting " + displayName);
 
+		//use overrideAll to parse environment variables in the form NAME+SUFFIX
+		EnvVars envVars = new EnvVars().overrideAll(envVariables);
 		// TODO add XVFB options here
 		Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener)
-				.envs(envVariables).start();
+				.envs(envVars).start();
 
 		Socket s = serverSocket.accept();
 		serverSocket.close();

@@ -11,6 +11,7 @@ import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser.SeleniumBrowserDescriptor;
+import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
@@ -200,6 +201,11 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
         if (display != null && !display.equals("")) {
         	opt.setEnvVar("DISPLAY", display);
         }
+
+		EnvironmentVariablesNodeProperty nodeEnvVars = c.getNode().getNodeProperties().get(EnvironmentVariablesNodeProperty.class);
+		if (nodeEnvVars != null) {
+			opt.getEnvironmentVariables().putAll(nodeEnvVars.getEnvVars());
+		}
         
 		return opt;
 	}

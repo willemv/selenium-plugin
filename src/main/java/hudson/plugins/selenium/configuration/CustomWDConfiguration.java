@@ -11,6 +11,7 @@ import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser.WebDriverBrowserDescriptor;
+import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
@@ -143,8 +144,12 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
         
         if (display != null && !display.equals("")) {
         	opt.setEnvVar("DISPLAY", display);
-        }        
-		
+        }
+
+        EnvironmentVariablesNodeProperty nodeEnvVars = c.getNode().getNodeProperties().get(EnvironmentVariablesNodeProperty.class);
+        if (nodeEnvVars != null) {
+            opt.getEnvironmentVariables().putAll(nodeEnvVars.getEnvVars());
+        }
         return opt;
 	}
 
